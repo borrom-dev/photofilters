@@ -104,6 +104,10 @@ class _PhotoFilterSelectorState extends State<PhotoFilterSelector> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.close),
+          onPressed: () => Navigator.pop(context, false),
+        ),
         title: widget.title,
         actions: <Widget>[
           loading
