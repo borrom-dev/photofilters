@@ -7,12 +7,15 @@ import 'package:photofilters/filters/filters.dart';
 import 'package:image/image.dart' as imageLib;
 import 'package:path_provider/path_provider.dart';
 
+import 'container_rectangle.dart';
+
 class PhotoFilter extends StatelessWidget {
   final imageLib.Image image;
   final String filename;
   final Filter filter;
   final BoxFit fit;
   final Widget loader;
+
   PhotoFilter({
     @required this.image,
     @required this.filename,
@@ -92,7 +95,6 @@ class _PhotoFilterSelectorState extends State<PhotoFilterSelector> {
     image = widget.image;
   }
 
-
   @override
   void dispose() {
     super.dispose();
@@ -114,7 +116,7 @@ class _PhotoFilterSelectorState extends State<PhotoFilterSelector> {
                     });
                     var imageFile = await saveFilteredImage();
 
-                    Navigator.pop(context, {'image_filtered':imageFile} );
+                    Navigator.pop(context, {'image_filtered': imageFile});
                   },
                 )
         ],
@@ -165,8 +167,8 @@ class _PhotoFilterSelectorState extends State<PhotoFilterSelector> {
                               ),
                             ),
                             onTap: () => setState(() {
-                                  _filter = widget.filters[index];
-                                }),
+                              _filter = widget.filters[index];
+                            }),
                           );
                         },
                       ),
@@ -191,8 +193,7 @@ class _PhotoFilterSelectorState extends State<PhotoFilterSelector> {
             case ConnectionState.none:
             case ConnectionState.active:
             case ConnectionState.waiting:
-              return CircleAvatar(
-                radius: 50.0,
+              return ContainerRectangle(
                 child: Center(
                   child: widget.loader,
                 ),
@@ -202,9 +203,8 @@ class _PhotoFilterSelectorState extends State<PhotoFilterSelector> {
               if (snapshot.hasError)
                 return Center(child: Text('Error: ${snapshot.error}'));
               cachedFilters[filter?.name ?? "_"] = snapshot.data;
-              return CircleAvatar(
-                radius: 50.0,
-                backgroundImage: MemoryImage(
+              return ContainerRectangle(
+                memoryImage: MemoryImage(
                   snapshot.data,
                 ),
                 backgroundColor: Colors.white,
@@ -214,7 +214,14 @@ class _PhotoFilterSelectorState extends State<PhotoFilterSelector> {
         },
       );
     } else {
-      return CircleAvatar(
+      return ContainerRectangle(
+        memoryImage: MemoryImage(
+          cachedFilters[filter?.name ?? "_"],
+        ),
+        backgroundColor: Colors.white,
+      );
+
+      CircleAvatar(
         radius: 50.0,
         backgroundImage: MemoryImage(
           cachedFilters[filter?.name ?? "_"],
