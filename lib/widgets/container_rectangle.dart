@@ -16,8 +16,8 @@ class ContainerRectangle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width / 3,
-      height: MediaQuery.of(context).size.width / 3,
+      width: 100,
+      height: 100,
       decoration: memoryImage == null
           ? null
           : BoxDecoration(
