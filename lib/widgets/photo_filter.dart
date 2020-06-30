@@ -225,13 +225,6 @@ class _PhotoFilterSelectorState extends State<PhotoFilterSelector> {
         backgroundColor: Colors.white,
       );
 
-      CircleAvatar(
-        radius: 50.0,
-        backgroundImage: MemoryImage(
-          cachedFilters[filter?.name ?? "_"],
-        ),
-        backgroundColor: Colors.white,
-      );
     }
   }
 
