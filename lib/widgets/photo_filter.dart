@@ -86,6 +86,8 @@ class _PhotoFilterSelectorState extends State<PhotoFilterSelector> {
   imageLib.Image image;
   bool loading;
 
+//  final List<Filter> filters;
+
   @override
   void initState() {
     super.initState();
@@ -93,11 +95,27 @@ class _PhotoFilterSelectorState extends State<PhotoFilterSelector> {
     _filter = widget.filters[0];
     filename = widget.filename;
     image = widget.image;
+    calculateFilters();
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  void calculateFilters() async {
+    for (int i = 0; i < widget.filters.length; i++) {
+      var filter = await compute(
+        applyFilter,
+        <String, dynamic>{
+          "filter": widget.filters[i],
+          "image": image,
+          "filename": filename
+        },
+      );
+      cachedFilters[widget.filters[i]?.name ?? "_"] = filter;
+      setState(() {});
+    }
   }
 
   @override
@@ -151,29 +169,52 @@ class _PhotoFilterSelectorState extends State<PhotoFilterSelector> {
                     child: Container(
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
-                        itemCount: widget.filters.length,
+                        itemCount: widget.filters.length == cachedFilters.length
+                            ? cachedFilters.length
+                            : cachedFilters.length + 1,
                         itemBuilder: (BuildContext context, int index) {
-                          return InkWell(
-                            child: Container(
-                              padding: EdgeInsets.all(5.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  _buildFilterThumbnail(
-                                      widget.filters[index], image, filename),
-                                  SizedBox(
-                                    height: 5.0,
+                          return widget.filters.length !=
+                                      cachedFilters.length &&
+                                  index == cachedFilters.length
+                              ? Wrap(
+                                  children: <Widget>[
+                                    Container(
+                                        margin: EdgeInsets.only(top: 32,left: 8),
+                                        width: 56,
+                                        height: 56,
+                                        child: CircularProgressIndicator(
+                                            strokeWidth: 1))
+                                  ],
+                                )
+                              : InkWell(
+                                  child: Container(
+                                    padding: EdgeInsets.all(5.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: <Widget>[
+                                        ContainerRectangle(
+                                          memoryImage: MemoryImage(
+                                            cachedFilters[
+                                                widget.filters[index].name],
+                                          ),
+                                          backgroundColor: Colors.white,
+                                        ),
+//                                  _buildFilterThumbnail(
+//                                      widget.filters[index], image, filename),
+                                        SizedBox(
+                                          height: 5.0,
+                                        ),
+                                        Text(
+                                          widget.filters[index].name,
+                                        )
+                                      ],
+                                    ),
                                   ),
-                                  Text(
-                                    widget.filters[index].name,
-                                  )
-                                ],
-                              ),
-                            ),
-                            onTap: () => setState(() {
-                              _filter = widget.filters[index];
-                            }),
-                          );
+                                  onTap: () => setState(() {
+                                    _filter = widget.filters[index];
+                                  }),
+                                );
                         },
                       ),
                     ),
@@ -224,7 +265,6 @@ class _PhotoFilterSelectorState extends State<PhotoFilterSelector> {
         ),
         backgroundColor: Colors.white,
       );
-
     }
   }
 
